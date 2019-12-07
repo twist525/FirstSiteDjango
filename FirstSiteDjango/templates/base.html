@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>{% load static %}
+    <meta charset="UTF-8">
+    <!-- This style -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/main-css.css/">
+    <!-- Фавиконы и иконки сайта -->
+    <link rel="icon" href="{%  static 'img/icon/favicon-m.png' %}" type="image/x-icon">
+    {% block metahead %}{% endblock %}
+</head>
+
+<body>
+    <!-- главный контент -->
+    <div class="nav justify-content-end">
+        <ul class="nav nav-models mx-5 px-5">
+            {% if request.user.is_authenticated %}
+            <li class="nav-item"><span class="nav-link">Вы авторизированы <strong>{{user}}</strong></li>
+            <li class="nav-item"><a class="nav-link" href="/logout/">Выход</a></li>
+            {% else %}
+            <li class="nav-item"><a class="nav-link" href="/login/">Авторизация</a></li>
+            <li class="nav-item"><a class="nav-link" href="/register/">Регистрация</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="main-content w-50 mx-auto">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- скрипты -->
+    {% block script %}{% endblock %}
+ 
+</body>
+
+</html>

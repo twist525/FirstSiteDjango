@@ -1,0 +1,27 @@
+e: && cd E:\my_progects\polls && pipenv shell 
+python manage.py runserver
+manage.py runserver --insecure
+
+pipenv install django
+django-admin startproject admin .
+manage.py startapp mysite 
+
+manage.py migrate
+
+manage.py createsuperuser
+
+manage.py runserver
+
+django-admin collectstatic
+
+manage.py collectstatic
+
+
+pip install trans
+
+
+python manage.py makemigrations
+python manage.py migrate
+
+
+python manage.py shell

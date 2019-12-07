@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% load static %}
+{% block metahead %}
+    <title></title>
+{% endblock %}
+
+<!-- главный контент -->
+{% block content %}
+
+{% if request.user.is_authenticated %}
+    <h1 class="text-center">Заполните анкету - {{ankete}}</h1>
+    <div style="height: 50px;"></div>
+    <hr>
+    <h4>{{question}}</h4>
+    
+
+    <form  method="post">
+        {% csrf_token %}
+        <p>
+            {% for a in answers %}
+            <input type="radio" name="{{question}}" id="{{forloop.counter}}"> <label for="{{forloop.counter}}">{{a}}</label>
+            {% endfor %}
+        </p>
+        <input type="submit" class="btn btn-primary" value="следующий вопрос" />
+    </form>
+
+
+
+
+{% else %}
+    <h2>Вы не авторизированы на портале.</h2>
+    <p>авторизируйтесь или зарегистрируйтесь</p>
+{% endif %}
+
+
+
+{% endblock %}
+
+<!-- скрипты -->
+{% block script %}{% endblock %}
