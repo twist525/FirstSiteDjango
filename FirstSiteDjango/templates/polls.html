@@ -1,0 +1,54 @@
+{% extends "base.html" %}{% load static %}
+{% block metahead %}
+    <title></title>
+{% endblock %}
+
+<!-- главный контент -->
+{% block content %}
+
+{% if request.user.is_authenticated %}
+    {% if result_test_text %}
+    <div style="height: 200px;"></div>
+    <div class="mx-auto text-center">
+        <h3>{{result_test_text}}</h3>
+        <h4>Ваш результат: {{current_result_test}}</h4>
+        <p><a href="/">на главную</a></p>
+    </div>
+        
+
+    {% else %}
+        <h1 class="text-center">Заполните анкету - {{current_polls}}</h1>
+        <div style="height: 50px;"></div>
+
+        <form action="" method="post">{% csrf_token %}
+            <h3>Вопрос № {{number_of_question}} {{current_question}}</h3>
+            <input type="hidden" name="vopros" value="{{current_question}}" >
+            {% for key in answer_options %}
+                 <input type="radio" name="otvet" id="{{forloop.counter}}" value="{{key}}" > <label for="{{forloop.counter}}">{{key}} </label>
+            {% endfor %}
+            <br><input type="submit" class="btn btn-primary" value="следующий вопрос"/>
+        </form>
+    {% endif %}
+       
+        
+{% else %}
+        <h2>Вы не авторизированы на портале.</h2>
+        <p>авторизируйтесь или зарегистрируйтесь</p>
+    
+{% endif %}
+
+
+
+{% endblock %}
+
+<!-- скрипты -->
+{% block script %}
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        var radio = document.querySelectorAll('input[type="radio"]');
+        var btn = document.querySelector('input[type="submit"]');
+        btn.setAttribute('style', 'display:none');
+        radio.forEach(elem=> elem.addEventListener('change', ()=> btn.setAttribute('style', 'display:block')))
+    });
+</script>
+{% endblock %}

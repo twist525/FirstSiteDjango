@@ -1,36 +1,17 @@
 from django.contrib import admin
-from .models import Questionnaire, TypeResult, Question, Answer
-
-# admin.site.register(Questionnaire)
-# admin.site.register(TypeResult)
-# admin.site.register(Question)
-# admin.site.register(Answer)
+from .models import Questionnaire, Question, Answer
 
 
-class TypeResultInline(admin.StackedInline):
-    model = TypeResult
-    extra = 0
-
-
-class QuestionInline(admin.StackedInline):
-    model = Question
-    extra = 0
-
-
-class AnswerInline(admin.StackedInline):
+class AnswerInLine(admin.TabularInline):
     model = Answer
-    extra = 0
+    extra = 1
 
 
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = [AnswerInLine,]
+
+
+@admin.register(Questionnaire)
 class QuestionnaireAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None,               {'fields': ['questionnaire']}),
-    ]
-    inlines = [QuestionInline]
-
     list_display = ('questionnaire',)
-
-
-admin.site.register(Questionnaire, QuestionnaireAdmin, )
-admin.site.register(Answer)
-admin.site.register(TypeResult)

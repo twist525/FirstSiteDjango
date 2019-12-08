@@ -1,11 +1,10 @@
-from django.urls import path, include
-from django.contrib.auth import views
-from .views import *
+from django.urls import path
+from .views import polls_detail, home_detail, create_user, auth_user, logout_user
 
 urlpatterns = [
     path('', home_detail, name='home_detail'),
     path('login/', auth_user, name='login'),
-    path('register/', creat_user, name='register'),
+    path('register/', create_user, name='register'),
     path('logout/', logout_user, name='logout'),
-    path('next/', home_detail, name='home_detail'),
+    path('<path>/', polls_detail, name='polls_detail'),
 ]

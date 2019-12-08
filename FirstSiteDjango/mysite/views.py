@@ -1,80 +1,77 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import *
+from .models import Questionnaire, Question, Answer
+
+n = 0
 
 
-# получаем ответы к вопросу
-def f2(v):
-    a = Answer.objects.filter(question__question_text=v)
-    return a
+def polls_detail(request, path):
+    global n
+    data = {}
+    current_poll = Questionnaire.objects.get(id=path)  # Получить ссылку на опрос выбранный пользователем
+    current_questions_list = Question.objects.filter(questionnaire__questionnaire=current_poll)  # <QuerySet>
 
+    if request.POST:
+        for answer in Answer.objects.filter(question__question_text=current_questions_list[n]):
+            if answer.answer_text == request.POST['otvet']:
+                try:
+                    data[answer.type_result] += 1
+                except KeyError:
+                    data[answer.type_result] = 1
+        n += 1
 
-# получаем вопрос в анкете
-def f1(i):
-    q_dict = []
-    a_list = Questionnaire.objects.all()
-    for a in a_list:
-        q_list = Question.objects.filter(questionnaire__questionnaire=a)
-        q_dict.extend(q_list)
-    return q_dict[i]
-
-
-# получаем анкету
-def f0(i):
-    a_list = Questionnaire.objects.all()
-    return a_list[i]
+    if n >= len(current_questions_list):
+        n = 0
+        current_result_test = None
+        for finish_result_poll in data:
+            if data[finish_result_poll]:
+                current_result_test = finish_result_poll
+        print(request.user.username, '+++++')
+        print(data, '-----')
+        user = User.objects.c
+        data.clear()
+        return render(request, 'polls.html', context={'result_test_text': 'Поздравляем, вы успешно прошли тест!',
+                                                      'current_result_test': current_result_test}
+                      )
+    answer_options = Answer.objects.filter(question__question_text=current_questions_list[n])
+    return render(request, 'polls.html',
+                  context={
+                      'current_question': current_questions_list[n],  # Вы мужчина? - Вопрос
+                      'answer_options': answer_options,               # <QuerySet [<Answer: Да>, <Answer: Нет>
+                      'number_of_question': n+1,                      # 2 - номер вопроса, +1 что бы не было Вопр: 0
+                      'current_polls': current_poll}                  # Мы мужчина или женщина? - тип теста
+                  )
 
 
 def home_detail(request):
-    a = 0 #номер анкеты из списка всех анкет
-    n = 0 #номер вопроса
-
-    # тут проверки на все 
-    if request.POST:
-        # в POST есть параметр инпута который был отмечен
-        print(request.POST)
-        n = n + 1 #номер следующего вопроса
-
-    anketa = f0(a) #получаем анкету
-    question = f1(n) #получаем вопрос 
-    answers = f2(question) #получаем ответы к вопросу 
-
-    # передаем в контекс словарь 
-    context = {'ankete': anketa, 'question': question, 'answers': answers}
-    return render(request, 'index.html', context=context)
+    polls_all_list = Questionnaire.objects.all()                      # Выбрать все существующие тесты(опросы)
+    return render(request, 'index.html', context={'list_of_polls': polls_all_list})
 
 
 # создать юзера в бд
-def creat_user(request):
+def create_user(request):
     if request.POST:
-        try:
-            d = dict(request.POST)
-            print(d)
-            login = d['login'][0]
-            email = d['email'][0]
-            password = d['password'][0]
-            user = User.objects.create_user(login, email, password)
-            user.save()
-            print('пользователь сохранён')
-        except:
-            print('Неудачно')
-        return render(request,'index.html')
-    return render(request,'register.html')
+        login = request.POST['login'][0]
+        email = request.POST['email'][0]
+        password = request.POST['password'][0]
+        user = User.objects.create_user(login, email, password)
+        user.save()
+        return render(request, 'index.html')
+    return render(request, 'register.html')
 
 
 # автоизация пользователя на сайте и првязка к сессии
 def auth_user(request):
-    if request.POST:
-        username = request.POST['login']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user.is_active:
-            login(request, user)
-        context = {}
-        return redirect('/', context = context)
-    else:
-        return render(request,'login.html')
+    if not request.POST:
+        return render(request, 'login.html')
+    username = request.POST['login']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user.is_active:
+        login(request, user)
+    context = {}
+    return redirect('/', context=context)
 
 
 # выход пользователя 
